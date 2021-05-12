@@ -1,0 +1,27 @@
+name:    xmonad-myconfig
+version: "0.0.1"
+
+dependencies:
+- base
+- xmonad
+- xmonad-contrib
+- xmonad-extras
+- containers
+- X11
+- xmobar
+- Cabal
+
+library:
+  source-dirs: src
+
+executables:
+  myXmobar:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -fwarn-unused-imports 
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - xmonad-myconfig

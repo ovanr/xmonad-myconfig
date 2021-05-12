@@ -1,0 +1,14 @@
+dockapp_mode simple
+parent_bg false
+geometry 8x1-300+0
+max_geometry 8x1-900+0
+background "#22242b"
+grow_gravity E 
+icon_gravity E
+icon_size 20 
+transparent false
+window_strut none
+window_type dock
+window_layer top
+no_shrink true
+skip_taskbar true
