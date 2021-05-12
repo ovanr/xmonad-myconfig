@@ -21,6 +21,6 @@ ln -s `pwd`/xmonad.hs ${HOME}/.xmonad/xmonad.hs
 
 ```
 cd xmonad-myconfig
-sudo cabal v2-install --global .
+sudo cabal v1-install --global .
 ```
 
