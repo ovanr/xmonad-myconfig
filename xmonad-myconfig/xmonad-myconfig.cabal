@@ -11,7 +11,9 @@ build-type:     Simple
 library
   exposed-modules:
       Xmobar.MyBar
-      XMonad.MyConfig
+      XMonad.MyConfig.Bindings
+      XMonad.MyConfig.Config
+      XMonad.MyConfig.Defaults
   other-modules:
       Paths_xmonad_myconfig
   hs-source-dirs:
