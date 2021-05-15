@@ -106,7 +106,8 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
 
     -- Restart xmonad
     , ([(modm .|. shiftMask, xK_r)], 
-         spawn "xmonad --recompile; xmonad --restart")
+         spawn $ "pkill 'nm-applet|wallpaper_rnd_i|caffeine|pasystray|stalonetray|redshift';" ++
+                 "${HOME}/.xmonad/./compile.sh; xmonad --restart")
     ] 
     ++
     -- Workspace Management Shortcuts

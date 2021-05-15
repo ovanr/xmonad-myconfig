@@ -1,0 +1,13 @@
+[Trigger]
+Operation = Install 
+Operation = Upgrade
+Type = Package
+Target = xmonad
+Target = xmonad-contrib
+Target = xmobar 
+
+[Action]
+Description = Recompiling custom XMonad config
+When = PostTransaction
+Exec = /bin/sh -c 'cd /home; for user in `ls`; do su -c "/bin/bash -c \"cd $user; if [[ -d .xmonad ]];then cd .xmonad; ./compile.sh; fi\"" $user; done'
+

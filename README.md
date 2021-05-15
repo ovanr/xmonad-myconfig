@@ -17,16 +17,21 @@ sudo pacman -S network-manager-applet pasystray xfce4-power-manager redshift xor
 yay -S caffeine-ng
 ```
 
-3. Link stalonetrayrc and xmonad.hs to .xmonad dir
+3. Link stalonetrayrc, xmonad.hs and compile.sh to .xmonad dir
 ```
 ln -s `pwd`/stalonetrayrc ${HOME}/.xmonad/stalonetrayrc
 ln -s `pwd`/xmonad.hs ${HOME}/.xmonad/xmonad.hs
+ln -s `pwd`/compile.sh ${HOME}/.xmonad/compile.sh
 ```
 
-4. Compile xmonad-myconfig to global scope
+4. Enable pacman hook that recompiles config package when new 
+   xmonad or xmobar packages are available
+```
+sudo cp xmonad-myconfig.hook /etc/pacman.d/hooks
+```
+
+5. Compile xmonad-myconfig
 
 ```
-cd xmonad-myconfig
-sudo cabal v1-install --global .
+./compile.sh
 ```
-
