@@ -8,6 +8,7 @@ module XMonad.MyConfig.Config where
 import XMonad
 import XMonad.Layout.LayoutModifier
 import XMonad.Layout.NoBorders
+import XMonad.Layout.TwoPane
 import XMonad.Layout.Grid
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
@@ -69,22 +70,27 @@ type MyLayout =
          (Mirror (ModifiedLayout SmartBorder Tall))
          (Choose
             (ModifiedLayout SmartBorder Grid)
-            (ModifiedLayout WithBorder Full)
+            (Choose
+               (ModifiedLayout SmartBorder TwoPane)
+               (ModifiedLayout WithBorder Full)
+            )
          )
       )
 
 myLayout :: MyLayout Window
-myLayout = tiled ||| Mirror tiled ||| smartBorders Grid ||| noBorders Full
+myLayout = tiled ||| 
+           Mirror tiled ||| 
+           smartBorders Grid ||| 
+           smartBorders twoPane ||| 
+           noBorders Full
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = smartBorders $ Tall nmaster delta ratio
-
+     twoPane = TwoPane delta ratio
      -- The default number of windows in the master pane
      nmaster = 1
-
      -- Default proportion of screen occupied by master pane
      ratio   = 1/2
-
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
 

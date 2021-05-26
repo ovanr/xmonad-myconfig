@@ -106,7 +106,7 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
 
     -- Restart xmonad
     , ([(modm .|. shiftMask, xK_r)], 
-         spawn $ "pkill 'nm-applet|wallpaper_rnd_i|caffeine|pasystray|stalonetray|redshift';" ++
+         spawn $ "pkill 'nm-applet|wallpaper_rnd_i|caffeine|pasystray|redshift';" ++
                  "${HOME}/.xmonad/./compile.sh; xmonad --restart")
     ] 
     ++
