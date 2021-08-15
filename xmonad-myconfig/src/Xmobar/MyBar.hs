@@ -82,7 +82,7 @@ config = defaultConfig {
                           
         -- memory usage monitor
         , Run $ Memory [ "--template" ,"<action=`gnome-terminal -- top -o +%MEM`>mem: <usedratio>%</action>"
-                       , "--Low"      , "20"        -- units: %
+                       , "--Low"      , "30"        -- units: %
                        , "--High"     , "90"        -- units: %
                        , "--low"      , "#7289da"
                        , "--normal"   , "darkorange"

@@ -3,6 +3,7 @@
 module XMonad.MyConfig.Bindings where
 
 import XMonad
+import XMonad.Actions.GroupNavigation
 import XMonad.MyConfig.Defaults
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
@@ -23,11 +24,14 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
 
     -- Application Shortcuts 
       ([(modm, xK_Return)], spawn myTerminal)
-    , ([(modm, xK_d)],      spawn myAppFinder)
+    , ([(modm, xK_a)],      spawn myAppFinder)
     , ([(modm, xK_w)],      spawn myWebBrowser)
     , ([(modm, xK_f)],      spawn myFileManager)
     , ([(modm, xK_e)],      spawn myEmailClient)
-      
+    , ([(modm, xK_d)],      spawn "discord" >> windows (W.greedyView "discord"))
+    , ([(modm, xK_z)],      spawn "zoom" >> windows (W.greedyView "zoom"))
+    , ([(modm, xK_s)],      spawn "skypeforlinux" >> windows (W.greedyView "skype"))
+
     -- Window Management Shortcuts
     
     -- close focused window
@@ -73,7 +77,7 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
     , ([(modm, xK_period)], sendMessage (IncMasterN (-1)))
 
     -- Take a screenshot
-    , ([(modm, xK_s)], spawn myScreenshooter)
+    , ([(modm, xK_Print)], spawn myScreenshooter)
     
     ---- Mute audio 
     , ([(noModMask, xF86XK_AudioMute)], 
@@ -106,7 +110,12 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
 
     -- Restart xmonad
     , ([(modm .|. shiftMask, xK_r)], 
-         spawn $ "pkill 'nm-applet|wallpaper_rnd_i|caffeine|pasystray|redshift';" ++
+         spawn $ "killall nm-applet;" ++
+                 "killall wallpaper_rnd_indicator;" ++
+                 "killall caffeine;" ++
+                 "killall pasystray;" ++
+                 "killall redshift;" ++
+                 "killall stalonetray;" ++
                  "${HOME}/.xmonad/./compile.sh; xmonad --restart")
     ] 
     ++
@@ -119,10 +128,27 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
         | (i, k) <- zip (filter strIsInt . XMonad.workspaces  $ conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
-    [([(shiftMask .|. modm, xK_e)], windows $ W.shift "email")]
+    [ ([(modm, xK_quoteleft) ], focusLastWorkspace) ]
+    ++
+
+    [([(shiftMask .|. modm, xK_e)], windows $ W.shift "email"),
+     ([(shiftMask .|. modm, xK_d)], windows $ W.shift "discord"),
+     ([(shiftMask .|. modm, xK_z)], windows $ W.shift "zoom"),
+     ([(shiftMask .|. modm, xK_s)], windows $ W.shift "skype")]
 
 strIsInt :: String -> Bool
 strIsInt = isJust . (readMaybe :: String -> Maybe Int)
+
+focusLastWorkspace = do
+   currentWorkspace <- W.workspace . W.current <$> withWindowSet return
+   nextMatch History (query currentWorkspace)
+   where
+      isWindowInWorkspace workspace window =
+         maybe False 
+               (\s -> window == W.focus s || elem window (W.up s) || elem window (W.down s))
+               (W.stack workspace)
+      query currentWorkspace =
+         not . isWindowInWorkspace currentWorkspace <$> ask
 
 ------------------------------------------------------------------------
 -- Mouse bindings

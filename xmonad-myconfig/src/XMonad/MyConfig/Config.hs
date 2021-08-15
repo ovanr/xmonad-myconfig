@@ -6,14 +6,16 @@
 module XMonad.MyConfig.Config where
 
 import XMonad
-import XMonad.Layout.LayoutModifier
-import XMonad.Layout.NoBorders
-import XMonad.Layout.TwoPane
-import XMonad.Layout.Grid
+import XMonad.Actions.GroupNavigation
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Layout.LayoutModifier
+import XMonad.Layout.NoBorders
+import XMonad.Layout.TwoPane
+import XMonad.Layout.Grid
+import XMonad.Layout.Spacing
 import XMonad.Util.Cursor
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
@@ -44,7 +46,7 @@ myModMask2      = mod4Mask
 -- By default we use numeric strings, but any string may be used as a
 -- workspace name. The number of workspaces is determined by the length
 -- of this list.
-myWorkspaces    = map show [1..5] ++ [ "email" ] 
+myWorkspaces    = map show [1..5] ++ [ "email", "discord", "zoom", "skype" ] 
 
 -- Border colors for unfocused and focused windows, respectively.
 myNormalBorderColor  = "#22242b"
@@ -62,31 +64,40 @@ myFocusedBorderColor = "#00CD00"
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
+type MyTiled = ModifiedLayout Spacing (ModifiedLayout SmartBorder Tall)
+type MyMirrorTiled = Mirror MyTiled
+type MyGrid = ModifiedLayout Spacing (ModifiedLayout SmartBorder Grid)
+type MyTwoPane = ModifiedLayout Spacing (ModifiedLayout SmartBorder TwoPane)
+type MyFull = ModifiedLayout Spacing (ModifiedLayout SmartBorder Full)
 
 type MyLayout = 
    Choose 
-      (ModifiedLayout SmartBorder Tall) 
+      MyTiled
       (Choose 
-         (Mirror (ModifiedLayout SmartBorder Tall))
+         MyMirrorTiled
          (Choose
-            (ModifiedLayout SmartBorder Grid)
+            MyGrid
             (Choose
-               (ModifiedLayout SmartBorder TwoPane)
-               (ModifiedLayout WithBorder Full)
+               MyTwoPane
+               MyFull
             )
          )
       )
 
 myLayout :: MyLayout Window
 myLayout = tiled ||| 
-           Mirror tiled ||| 
-           smartBorders Grid ||| 
-           smartBorders twoPane ||| 
-           noBorders Full
+           mirrorTiled ||| 
+           grid ||| 
+           twoPane ||| 
+           full
   where
-     -- default tiling algorithm partitions the screen into two panes
-     tiled   = smartBorders $ Tall nmaster delta ratio
-     twoPane = TwoPane delta ratio
+     border = Border 5 5 5 5
+     withSpacing = spacingRaw False border False border True
+     tiled   = withSpacing $ smartBorders $ Tall nmaster delta ratio
+     mirrorTiled = Mirror tiled
+     grid = withSpacing $ smartBorders Grid
+     twoPane = withSpacing $ smartBorders $ TwoPane delta ratio
+     full = withSpacing $ smartBorders Full
      -- The default number of windows in the master pane
      nmaster = 1
      -- Default proportion of screen occupied by master pane
@@ -110,17 +121,20 @@ myLayout = tiled |||
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "Thunderbird" --> doShift "email" ]
+    [ className =? "Thunderbird" --> doShift "email"
+    , className =? "discord"     --> doShift "discord"
+    , className =? "Zoom"        --> doShift "zoom"
+    , className =? "Skype"       --> doShift "skype"
+    ]
 
 ------------------------------------------------------------------------
 -- Event handling
 
--- * EwmhDesktops users should change this to ewmhDesktopsEventHook
+-- EwmhDesktops users should change this to ewmhDesktopsEventHook
 --
 -- Defines a custom handler function for X Events. The function should
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
---
 myEventHook = ewmhDesktopsEventHook 
 
 ------------------------------------------------------------------------
@@ -129,7 +143,10 @@ myEventHook = ewmhDesktopsEventHook
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
-myLogHook = ewmhDesktopsLogHook <+> fadeInactiveLogHook transparency
+myLogHook = ewmhDesktopsLogHook <+> 
+            fadeInactiveLogHook transparency <+>
+            historyHook
+            
    where
       transparency = 0xdeeeeeeeee -- lower values -> more transparent
 
@@ -172,10 +189,11 @@ myStartupHook = do
    spawn "nm-applet"
    spawn "caffeine"
    spawn "wallpaper_rnd_indicator"
-   -- spawn "batteryNotifier.sh"
+
+   spawn "skypeforlinux"
    
    -- night light switcher
-   spawn "redshift -x; redshift -l 35.1753:33.3642 -b 0.8:0.7 -t 6500:3500" 
+   spawn "redshift -x; redshift -l 35.1753:33.3642 -t 6500:3500" 
    
    -- spawn auto-locking program
    spawn $ head myLocker
