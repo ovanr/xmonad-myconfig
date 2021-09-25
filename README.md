@@ -4,6 +4,10 @@ My xmonad-xmobar-stalonetrayrc config
 
 Xmonad and Xmobar configs are nicely packaged
 
+## Preview
+
+![preview](https://raw.githubusercontent.com/ovanr/xmonad-myconfig/main/screenshot.png)
+
 ## Installation (Arch)
 
 1. Install needed packages
@@ -35,3 +39,5 @@ sudo cp xmonad-myconfig.hook /etc/pacman.d/hooks
 ```
 ./compile.sh
 ```
+
+
