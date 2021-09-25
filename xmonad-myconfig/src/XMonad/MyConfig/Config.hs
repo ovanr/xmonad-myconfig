@@ -11,11 +11,13 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.SetWMName
 import XMonad.Layout.LayoutModifier
 import XMonad.Layout.NoBorders
 import XMonad.Layout.TwoPane
 import XMonad.Layout.Grid
 import XMonad.Layout.Spacing
+import XMonad.Layout.Renamed
 import XMonad.Util.Cursor
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
@@ -49,7 +51,7 @@ myModMask2      = mod4Mask
 myWorkspaces    = map show [1..5] ++ [ "email", "discord", "zoom", "skype" ] 
 
 -- Border colors for unfocused and focused windows, respectively.
-myNormalBorderColor  = "#22242b"
+myNormalBorderColor  = "#50504c"
 myFocusedBorderColor = "#00CD00"
 
 
@@ -64,11 +66,11 @@ myFocusedBorderColor = "#00CD00"
 -- The available layouts.  Note that each layout is separated by |||,
 -- which denotes layout choice.
 --
-type MyTiled = ModifiedLayout Spacing (ModifiedLayout SmartBorder Tall)
-type MyMirrorTiled = Mirror MyTiled
-type MyGrid = ModifiedLayout Spacing (ModifiedLayout SmartBorder Grid)
-type MyTwoPane = ModifiedLayout Spacing (ModifiedLayout SmartBorder TwoPane)
-type MyFull = ModifiedLayout Spacing (ModifiedLayout SmartBorder Full)
+type MyTiled = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Tall))
+type MyMirrorTiled = ModifiedLayout Rename (Mirror MyTiled)
+type MyGrid = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Grid))
+type MyTwoPane = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder TwoPane))
+type MyFull = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Full))
 
 type MyLayout = 
    Choose 
@@ -92,12 +94,12 @@ myLayout = tiled |||
            full
   where
      border = Border 5 5 5 5
-     withSpacing = spacingRaw False border False border True
-     tiled   = withSpacing $ smartBorders $ Tall nmaster delta ratio
-     mirrorTiled = Mirror tiled
-     grid = withSpacing $ smartBorders Grid
-     twoPane = withSpacing $ smartBorders $ TwoPane delta ratio
-     full = withSpacing $ smartBorders Full
+     withSpacing = spacingRaw True border False border True
+     tiled   = renamed [Replace "V-Tiled"] $ withSpacing $ smartBorders $ Tall nmaster delta ratio
+     mirrorTiled = renamed [Replace"H-Tiled"] $ Mirror tiled
+     grid = renamed [Replace "Grid"] $ withSpacing $ smartBorders Grid
+     twoPane = renamed [Replace "2-Pane"] $ withSpacing $ smartBorders $ TwoPane delta ratio
+     full = renamed [Replace "Full"] $ withSpacing $ smartBorders Full
      -- The default number of windows in the master pane
      nmaster = 1
      -- Default proportion of screen occupied by master pane
@@ -190,21 +192,47 @@ myStartupHook = do
    spawn "caffeine"
    spawn "wallpaper_rnd_indicator"
 
-   spawn "skypeforlinux"
-   
    -- night light switcher
    spawn "redshift -x; redshift -l 35.1753:33.3642 -t 6500:3500" 
    
    -- spawn auto-locking program
    spawn $ head myLocker
 
+   -- needed for Java Swing GUI windows to work
+   setWMName "LG3D"
+
 ------------------------------------------------------------------------
 -- Status bar
 
 myBar = "myXmobar"
 
+fixLocation :: [String] -> [String]
+fixLocation [w,l,t] =
+   [ l, t, w ++ wChunk]
+   where
+      wChunk = replicate (30 - length w) ' '
+
+fixLocation x = x
+
+fixTitle :: String -> String
+fixTitle str = xmobarColor "#7289da"  "" $ take 60 $ tChunk ++ t ++ tChunk
+   where
+      t = shorten 50 str
+      tChunk = flip replicate ' ' $ (62 - length t) `div` 2
+
+fixLayout :: String -> String
+fixLayout l = lChunk ++ l
+   where
+      lChunk = replicate (10 - length l) ' '
+
 -- use xmobarPP config tos
-myPP = xmobarPP { ppCurrent = xmobarColor "#7289da" "" . wrap "<" ">" }
+myPP = xmobarPP { 
+      ppCurrent = xmobarColor "#dAA520" "",
+      ppTitle =  fixTitle, 
+      ppLayout = fixLayout,
+      ppSep = "",
+      ppOrder = fixLocation
+   }
 
 toggleStrutsKey XConfig{ XMonad.modMask = modMask } = (modMask, xK_b)
 

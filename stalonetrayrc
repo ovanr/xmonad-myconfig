@@ -1,8 +1,8 @@
 dockapp_mode simple
 parent_bg false
-geometry 8x1-300+0
+geometry 8x1-220+0
 max_geometry 8x1-900+0
-background "#22242b"
+background "#000000"
 grow_gravity E 
 icon_gravity E
 icon_size 20 

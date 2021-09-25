@@ -128,7 +128,9 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
         | (i, k) <- zip (filter strIsInt . XMonad.workspaces  $ conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
-    [ ([(modm, xK_quoteleft) ], focusLastWorkspace) ]
+
+    [ ([(modm, xK_quoteleft) ], focusLastWorkspace),
+      ([(modm, xK_Tab) ], nextMatch Backward (return True)) ]
     ++
 
     [([(shiftMask .|. modm, xK_e)], windows $ W.shift "email"),

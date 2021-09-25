@@ -9,11 +9,14 @@ runXmobar = configFromArgs config >>= xmobar
 config = defaultConfig { 
    -- appearance
      font =   "xft:DejaVu Sans Mono-12"
-   , bgColor =      "#22242b"
-   , fgColor =      "#CACAC0"
+   -- , bgColor =      "#22242b"
+   -- , fgColor =      "#CACAC0"
+   , bgColor =      "#000000"
+   , fgColor =      "#ffffff"
    , position =     Top
    , border =       BottomB
-   , borderColor =  "black"
+   , borderColor =  "#000000"
+   , borderWidth = 3
    , alpha = 255
    , additionalFonts = [ "xft:Symbola-9"
                        , "xft:Symbola-10"
@@ -24,7 +27,7 @@ config = defaultConfig {
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "{}"  -- separator between left-right alignment
-   , template = "%battery% | %multicpu% %multicoretemp% | %memory% | %dynnetwork% { %StdinReader% }  | %date% | %kbd% "
+   , template = "%battery%  %multicpu% %multicoretemp%  %memory%  %dynnetwork% { %StdinReader% }  %kbd%  %date% "
 
    -- general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
@@ -63,7 +66,7 @@ config = defaultConfig {
                            ] 10
 
         -- cpu activity monitor
-        , Run $ MultiCpu [ "--template" , "<action=`gnome-terminal -- top -o +%CPU`>cpu: <total>%</action>"
+        , Run $ MultiCpu [ "--template" , "<action=`gnome-terminal -- top -o +%CPU`>▣ <total>%</action>"
                          , "--Low"      , "10"         -- units: %
                          , "--High"     , "1200"       -- units: %
                          , "--low"      , "#7289da"
@@ -72,7 +75,7 @@ config = defaultConfig {
                          ] 10
 
         -- cpu core temperature monitor
-        , Run $ MultiCoreTemp  [ "--template" , "<action=`sudo fx --toggle-fan`> <max>°</action>"
+        , Run $ MultiCoreTemp  [ "--template" , "<action=`sudo fx --toggle-fan`><max>°</action>"
                                , "--Low"      , "60"        -- units: °C
                                , "--High"     , "80"        -- units: °C
                                , "--low"      , "#7289da"
@@ -81,7 +84,7 @@ config = defaultConfig {
                                ] 50
                           
         -- memory usage monitor
-        , Run $ Memory [ "--template" ,"<action=`gnome-terminal -- top -o +%MEM`>mem: <usedratio>%</action>"
+        , Run $ Memory [ "--template" ,"<action=`gnome-terminal -- top -o +%MEM`>ℝ <usedratio>%</action>"
                        , "--Low"      , "30"        -- units: %
                        , "--High"     , "90"        -- units: %
                        , "--low"      , "#7289da"
@@ -99,11 +102,11 @@ config = defaultConfig {
 
                         , "--" -- battery specific options
                                   -- discharging status
-                                  , "-o"  , "↓ <left>"
+                                  , "-o"  , "<fc=#dAA520>↓ <left></fc>"
                                   -- AC "on" status
-                                  , "-O"  , "<fc=#dAA520>↑ <left></fc>"
+                                  , "-O"  , "<fc=#7289da>↑ <left></fc>"
                                   -- charged status
-                                  , "-i"  , "<fc=#006000><left></fc>"
+                                  , "-i"  , "<fc=#7289da>↯ <left></fc>"
                                   -- , "-a", "notify-send -u critical 'Battery is running out!'"
                                   -- , "-A", "10"
                         ] 50
@@ -112,11 +115,11 @@ config = defaultConfig {
         
         -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-        , Run $ Date "<action=`gnome-calendar`>%d-%b (%a) %T</action>" "date" 10
+        , Run $ Date "<action=`gnome-calendar`>%d-%b %T</action>" "date" 10
 
         -- keyboard layout indicator
-        , Run $ Kbd [("us"         , "<fc=#7289da>EN</fc>")
-                    ,("gr"         , "<fc=#dAA520>GR</fc>")
+        , Run $ Kbd [("us"         , "<fc=#7289da>en</fc>")
+                    ,("gr"         , "<fc=#dAA520>ελ</fc>")
                     ]
         ]
    }
