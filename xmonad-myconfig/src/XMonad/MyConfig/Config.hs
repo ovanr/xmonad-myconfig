@@ -6,24 +6,19 @@
 module XMonad.MyConfig.Config where
 
 import XMonad
-import XMonad.Actions.GroupNavigation
+import XMonad.Actions.GroupNavigation (historyHook)
+import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.SetWMName
-import XMonad.Layout.LayoutModifier
-import XMonad.Layout.NoBorders
-import XMonad.Layout.TwoPane
-import XMonad.Layout.Grid
-import XMonad.Layout.Spacing
-import XMonad.Layout.Renamed
-import XMonad.Util.Cursor
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 import Control.Monad
 import XMonad.MyConfig.Defaults
 import XMonad.MyConfig.Bindings
+import XMonad.MyConfig.Layout
+import XMonad.MyConfig.StartupHooks (myStartupHook)
+import XMonad.MyConfig.Xmobar (withStatusBar)
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -56,58 +51,6 @@ myFocusedBorderColor = "#00CD00"
 
 
 ------------------------------------------------------------------------
--- Layouts:
-
--- You can specify and transform your layouts by modifying these values.
--- If you change layout bindings be sure to use 'mod-shift-space' after
--- restarting (with 'mod-q') to reset your layout state to the new
--- defaults, as xmonad preserves your old layout settings by default.
---
--- The available layouts.  Note that each layout is separated by |||,
--- which denotes layout choice.
---
-type MyTiled = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Tall))
-type MyMirrorTiled = ModifiedLayout Rename (Mirror MyTiled)
-type MyGrid = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Grid))
-type MyTwoPane = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder TwoPane))
-type MyFull = ModifiedLayout Rename (ModifiedLayout Spacing (ModifiedLayout SmartBorder Full))
-
-type MyLayout = 
-   Choose 
-      MyTiled
-      (Choose 
-         MyMirrorTiled
-         (Choose
-            MyGrid
-            (Choose
-               MyTwoPane
-               MyFull
-            )
-         )
-      )
-
-myLayout :: MyLayout Window
-myLayout = tiled ||| 
-           mirrorTiled ||| 
-           grid ||| 
-           twoPane ||| 
-           full
-  where
-     border = Border 5 5 5 5
-     withSpacing = spacingRaw True border False border True
-     tiled   = renamed [Replace "V-Tiled"] $ withSpacing $ smartBorders $ Tall nmaster delta ratio
-     mirrorTiled = renamed [Replace"H-Tiled"] $ Mirror tiled
-     grid = renamed [Replace "Grid"] $ withSpacing $ smartBorders Grid
-     twoPane = renamed [Replace "2-Pane"] $ withSpacing $ smartBorders $ TwoPane delta ratio
-     full = renamed [Replace "Full"] $ withSpacing $ smartBorders Full
-     -- The default number of windows in the master pane
-     nmaster = 1
-     -- Default proportion of screen occupied by master pane
-     ratio   = 1/2
-     -- Percent of screen to increment by when resizing panes
-     delta   = 3/100
-
-------------------------------------------------------------------------
 -- Window rules:
 
 -- Execute arbitrary actions and WindowSet manipulations when managing
@@ -127,6 +70,8 @@ myManageHook = composeAll
     , className =? "discord"     --> doShift "discord"
     , className =? "Zoom"        --> doShift "zoom"
     , className =? "Skype"       --> doShift "skype"
+    , stringProperty "_NET_WM_STATE(ATOM)" =? "_NET_WM_STATE_ABOVE"  --> doFloat
+    , stringProperty "_NET_WM_STATE(ATOM)" =? "_NET_WM_STATE_STAYS_ON_TOP"  --> doFloat
     ]
 
 ------------------------------------------------------------------------
@@ -152,96 +97,7 @@ myLogHook = ewmhDesktopsLogHook <+>
    where
       transparency = 0xdeeeeeeeee -- lower values -> more transparent
 
-------------------------------------------------------------------------
--- Startup hook
 
--- Perform an arbitrary action each time xmonad starts or is restarted
--- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
--- per-workspace layout choices.
---
-myStartupHook = do
-   ewmhDesktopsStartup 
-   
-   -- set mouse cursor 
-   setDefaultCursor xC_left_ptr
-   
-   -- set keyboard layout toggle
-   spawn "setxkbmap -option grp:rctrl_rshift_toggle us,gr"
-
-   -- enable tap to click
-   let touchpad = " 'ELAN1200:00 04F3:3090 Touchpad' "
-       tapOpt = " 'libinput Tapping Enabled' "
-   spawn $ "xinput set-prop " ++ touchpad ++ tapOpt ++ "1"
-   
-   -- listen for notify events 
-   --spawn "/usr/lib/notification-daemon-1.0/notification-daemon"
-  
-   -- spawn power management 
-   spawn "xfce4-power-manager"
-   
-   -- set wallpaper
-   spawn "${HOME}/./.fehbg"
-   
-   -- compositor
-   spawn "picom"
-
-   -- tray applets
-   spawn $ "stalonetray -c " ++ stalonetrayConfig
-   spawn "pasystray"
-   spawn "nm-applet"
-   spawn "caffeine"
-   spawn "wallpaper_rnd_indicator"
-
-   -- night light switcher
-   spawn "redshift -x; redshift -l 35.1753:33.3642 -t 6500:3500" 
-   
-   -- spawn auto-locking program
-   spawn $ head myLocker
-
-   -- needed for Java Swing GUI windows to work
-   setWMName "LG3D"
-
-------------------------------------------------------------------------
--- Status bar
-
-myBar = "myXmobar"
-
-fixLocation :: [String] -> [String]
-fixLocation [w,l,t] =
-   [ l, t, w ++ wChunk]
-   where
-      wChunk = replicate (30 - length w) ' '
-
-fixLocation x = x
-
-fixTitle :: String -> String
-fixTitle str = xmobarColor "#7289da"  "" $ take 60 $ tChunk ++ t ++ tChunk
-   where
-      t = shorten 50 str
-      tChunk = flip replicate ' ' $ (62 - length t) `div` 2
-
-fixLayout :: String -> String
-fixLayout l = lChunk ++ l
-   where
-      lChunk = replicate (10 - length l) ' '
-
--- use xmobarPP config tos
-myPP = xmobarPP { 
-      ppCurrent = xmobarColor "#dAA520" "",
-      ppTitle =  fixTitle, 
-      ppLayout = fixLayout,
-      ppSep = "",
-      ppOrder = fixLocation
-   }
-
-toggleStrutsKey XConfig{ XMonad.modMask = modMask } = (modMask, xK_b)
-
-withStatusBar :: LayoutClass l Window
-              => XConfig l
-              -> IO (XConfig (ModifiedLayout AvoidStruts l))
-withStatusBar = statusBar myBar myPP toggleStrutsKey
-
-stalonetrayConfig = "${HOME}/.xmonad/stalonetrayrc"
 
 ------------------------------------------------------------------------
 -- The Config
@@ -264,7 +120,7 @@ myConfig = def {
 
       -- hooks, layouts
         layoutHook         = myLayout,
-        manageHook         = manageDocks <+> myManageHook,
+        manageHook         = manageDocks <+> myManageHook <+> manageHook def,
         handleEventHook    = myEventHook,
         logHook            = myLogHook, 
         startupHook        = myStartupHook

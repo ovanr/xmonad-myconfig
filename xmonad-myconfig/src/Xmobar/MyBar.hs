@@ -3,8 +3,10 @@
 module Xmobar.MyBar where
 
 import Xmobar
+import XMonad.MyConfig.Defaults (normalColor)
 
 runXmobar = configFromArgs config >>= xmobar 
+
 
 config = defaultConfig { 
    -- appearance
@@ -58,55 +60,55 @@ config = defaultConfig {
 
         -- network activity monitor (dynamic interface resolution)
         , Run $ DynNetwork [ "--template" , "<action=`gnome-terminal -- nethogs`>↑ <tx> ↓ <rx></action>"
-                           , "--Low"      , "10000"       -- units: B/s
+                           , "--Low"      , "524288"      -- units: B/s
                            , "--High"     , "10485760"    -- units: B/s
-                           , "--low"      , "#7289da"
-                           , "--normal"   , "darkorange"
-                           , "--high"     , "darkred"
-                           ] 10
+                           , "--low"      , normalColor
+                           , "--normal"   , "#dAA520"
+                           , "--high"     , "red"
+                           ] 20
 
         -- cpu activity monitor
         , Run $ MultiCpu [ "--template" , "<action=`gnome-terminal -- top -o +%CPU`>▣ <total>%</action>"
-                         , "--Low"      , "10"         -- units: %
-                         , "--High"     , "1200"       -- units: %
-                         , "--low"      , "#7289da"
-                         , "--normal"   , "darkorange"
-                         , "--high"     , "darkred"
-                         ] 10
+                         , "--Low"      , "15"       -- units: %
+                         , "--High"     , "60"       -- units: %
+                         , "--low"      , normalColor
+                         , "--normal"   , "#dAA520"
+                         , "--high"     , "red"
+                         ] 20
 
         -- cpu core temperature monitor
         , Run $ MultiCoreTemp  [ "--template" , "<action=`sudo fx --toggle-fan`><max>°</action>"
                                , "--Low"      , "60"        -- units: °C
                                , "--High"     , "80"        -- units: °C
-                               , "--low"      , "#7289da"
-                               , "--normal"   , "darkorange"
-                               , "--high"     , "darkred"
+                               , "--low"      , normalColor
+                               , "--normal"   , "#dAA520"
+                               , "--high"     , "red"
                                ] 50
                           
         -- memory usage monitor
         , Run $ Memory [ "--template" ,"<action=`gnome-terminal -- top -o +%MEM`>ℝ <usedratio>%</action>"
                        , "--Low"      , "30"        -- units: %
-                       , "--High"     , "90"        -- units: %
-                       , "--low"      , "#7289da"
-                       , "--normal"   , "darkorange"
-                       , "--high"     , "darkred"
-                       ] 10
+                       , "--High"     , "80"        -- units: %
+                       , "--low"      , normalColor
+                       , "--normal"   , "#dAA520"
+                       , "--high"     , "red"
+                       ] 50
 
         -- battery monitor
         , Run $ Battery [ "--template" , "<action=`xfce4-power-manager-settings -d battery_BAT1`><acstatus></action>"
                         , "--Low"      , "10"        -- units: %
                         , "--High"     , "60"        -- units: %
-                        , "--low"      , "darkred"
-                        , "--normal"   , "darkorange"
-                        , "--high"     , "#7289da"
+                        , "--low"      , "red"
+                        , "--normal"   , "#dAA520"
+                        , "--high"     , normalColor
 
                         , "--" -- battery specific options
                                   -- discharging status
                                   , "-o"  , "<fc=#dAA520>↓ <left></fc>"
                                   -- AC "on" status
-                                  , "-O"  , "<fc=#7289da>↑ <left></fc>"
+                                  , "-O"  , "<fc=" ++ normalColor ++ ">↑ <left></fc>"
                                   -- charged status
-                                  , "-i"  , "<fc=#7289da>↯ <left></fc>"
+                                  , "-i"  , "<fc=" ++ normalColor ++ ">↯ <left></fc>"
                                   -- , "-a", "notify-send -u critical 'Battery is running out!'"
                                   -- , "-A", "10"
                         ] 50
@@ -118,7 +120,7 @@ config = defaultConfig {
         , Run $ Date "<action=`gnome-calendar`>%d-%b %T</action>" "date" 10
 
         -- keyboard layout indicator
-        , Run $ Kbd [("us"         , "<fc=#7289da>en</fc>")
+        , Run $ Kbd [("us"         , "<fc=" ++ normalColor ++">en</fc>")
                     ,("gr"         , "<fc=#dAA520>ελ</fc>")
                     ]
         ]

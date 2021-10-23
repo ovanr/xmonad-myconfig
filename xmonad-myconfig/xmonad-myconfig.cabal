@@ -14,6 +14,9 @@ library
       XMonad.MyConfig.Bindings
       XMonad.MyConfig.Config
       XMonad.MyConfig.Defaults
+      XMonad.MyConfig.Layout
+      XMonad.MyConfig.StartupHooks
+      XMonad.MyConfig.Xmobar
   other-modules:
       Paths_xmonad_myconfig
   hs-source-dirs:
