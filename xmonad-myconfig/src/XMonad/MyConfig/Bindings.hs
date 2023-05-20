@@ -27,10 +27,7 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
     , ([(modm, xK_a)],      spawn myAppFinder)
     , ([(modm, xK_w)],      spawn myWebBrowser)
     , ([(modm, xK_f)],      spawn myFileManager)
-    , ([(modm, xK_e)],      spawn myEmailClient)
-    , ([(modm, xK_d)],      spawn "discord" >> windows (W.greedyView "discord"))
-    , ([(modm, xK_z)],      spawn "zoom" >> windows (W.greedyView "zoom"))
-    , ([(modm, xK_s)],      spawn "skypeforlinux" >> windows (W.greedyView "skype"))
+    , ([(modm, xK_e)],      spawn myEmailClient >> windows (W.greedyView "e"))
 
     -- Window Management Shortcuts
     
@@ -133,10 +130,7 @@ myKeys conf@XConfig{ XMonad.modMask = modm } = M.fromList . normalise $
       ([(modm, xK_Tab) ], nextMatch Backward (return True)) ]
     ++
 
-    [([(shiftMask .|. modm, xK_e)], windows $ W.shift "email"),
-     ([(shiftMask .|. modm, xK_d)], windows $ W.shift "discord"),
-     ([(shiftMask .|. modm, xK_z)], windows $ W.shift "zoom"),
-     ([(shiftMask .|. modm, xK_s)], windows $ W.shift "skype")]
+    [([(shiftMask .|. modm, xK_e)], windows $ W.shift "e")]
 
 strIsInt :: String -> Bool
 strIsInt = isJust . (readMaybe :: String -> Maybe Int)

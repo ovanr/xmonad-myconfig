@@ -8,7 +8,9 @@ dependencies:
 - xmonad-extras
 - containers
 - X11
+- data-default
 - xmobar
+- taffybar
 - Cabal
 
 library:

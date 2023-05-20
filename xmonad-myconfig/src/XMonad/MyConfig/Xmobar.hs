@@ -8,32 +8,19 @@ import XMonad.Hooks.ManageDocks
 
 myBar = "myXmobar"
 
-fixLocation :: [String] -> [String]
-fixLocation [w,l,t] =
-   [ l, t, w ++ wChunk]
-   where
-      wChunk = replicate (30 - length w) ' '
+myOrder :: [String] -> [String]
+myOrder (w:l:t:_) = [w, t]
 
-fixLocation x = x
-
-fixTitle :: String -> String
-fixTitle str = xmobarColor "#ffffff"  "" $ take 60 $ tChunk ++ t ++ tChunk
-   where
-      t = shorten 50 str
-      tChunk = flip replicate ' ' $ (61 - length t) `div` 2
-
-fixLayout :: String -> String
-fixLayout l = lChunk ++ l
-   where
-      lChunk = replicate (10 - length l) ' '
+myTitle :: String -> String
+myTitle str = take 200 $ "     " ++ (shorten 80 str) ++ repeat ' '
 
 -- use xmobarPP config tos
 myPP = xmobarPP { 
       ppCurrent = xmobarColor "#dAA520" "",
-      ppTitle =  fixTitle, 
-      ppLayout = fixLayout,
+      ppTitle =  myTitle, 
+      ppLayout = id,
       ppSep = "",
-      ppOrder = fixLocation
+      ppOrder = myOrder
    }
 
 toggleStrutsKey XConfig{ XMonad.modMask = modMask } = (modMask, xK_b)

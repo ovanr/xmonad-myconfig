@@ -10,7 +10,7 @@ runXmobar = configFromArgs config >>= xmobar
 
 config = defaultConfig { 
    -- appearance
-     font =   "xft:DejaVu Sans Mono-12"
+     font =   "xft:DejaVu-12"
    -- , bgColor =      "#22242b"
    -- , fgColor =      "#CACAC0"
    , bgColor =      "#000000"
@@ -18,7 +18,7 @@ config = defaultConfig {
    , position =     Top
    , border =       BottomB
    , borderColor =  "#000000"
-   , borderWidth = 3
+   , borderWidth = 1
    , alpha = 255
    , additionalFonts = [ "xft:Symbola-9"
                        , "xft:Symbola-10"
@@ -29,7 +29,7 @@ config = defaultConfig {
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "{}"  -- separator between left-right alignment
-   , template = "%battery%  %multicpu% %multicoretemp%  %memory%  %dynnetwork% { %StdinReader% }  %kbd%  %date% "
+   , template = " %StdinReader% {} %multicpu%  %multicoretemp%  %battery%  %kbd%  %date% "
 
    -- general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
@@ -117,7 +117,7 @@ config = defaultConfig {
         
         -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-        , Run $ Date "<action=`gnome-calendar`>%d-%b %T</action>" "date" 10
+        , Run $ Date "<action=`google-chrome-stable --app='https://calendar.google.com/calendar/u/0/r?pli=1'`>%d-%b  %H:%M</action>" "date" 10
 
         -- keyboard layout indicator
         , Run $ Kbd [("us"         , "<fc=" ++ normalColor ++">en</fc>")

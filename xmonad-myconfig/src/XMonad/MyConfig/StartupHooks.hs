@@ -14,13 +14,12 @@ import XMonad.MyConfig.Defaults
 -- per-workspace layout choices.
 --
 myStartupHook = do
-   ewmhDesktopsStartup 
    
    -- set mouse cursor 
    setDefaultCursor xC_left_ptr
    
    -- set keyboard layout toggle
-   spawn "setxkbmap -option grp:rctrl_rshift_toggle us,gr"
+   spawn "setxkbmap -option grp:win_space_toggle us,gr"
 
    -- enable tap to click
    let touchpad = " 'ELAN1200:00 04F3:3090 Touchpad' "
@@ -36,15 +35,17 @@ myStartupHook = do
    -- set wallpaper
    spawn "${HOME}/./.fehbg"
    
+   spawn "taffybar"
+
    -- compositor
    spawn "picom"
 
    -- tray applets
-   spawn $ "stalonetray -c " ++ stalonetrayConfig
-   spawn "pasystray"
+   -- spawn $ "stalonetray -c " ++ stalonetrayConfig
+   spawn "pasystray --no-notify"
    spawn "nm-applet"
    spawn "caffeine"
-   spawn "wallpaper_rnd_indicator"
+   -- spawn "wallpaper_rnd_indicator"
 
    -- night light switcher
    spawn "redshift -x; redshift -l 35.1753:33.3642 -t 6500:3500" 

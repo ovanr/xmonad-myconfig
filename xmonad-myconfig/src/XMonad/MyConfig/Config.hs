@@ -17,8 +17,13 @@ import Control.Monad
 import XMonad.MyConfig.Defaults
 import XMonad.MyConfig.Bindings
 import XMonad.MyConfig.Layout
+import XMonad.Hooks.ManageDocks
 import XMonad.MyConfig.StartupHooks (myStartupHook)
 import XMonad.MyConfig.Xmobar (withStatusBar)
+import Taffybar.Config (taffybarConfig)
+import System.Taffybar
+import System.Taffybar.Support.PagerHints (pagerHints)
+
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -43,7 +48,7 @@ myModMask2      = mod4Mask
 -- By default we use numeric strings, but any string may be used as a
 -- workspace name. The number of workspaces is determined by the length
 -- of this list.
-myWorkspaces    = map show [1..5] ++ [ "email", "discord", "zoom", "skype" ] 
+myWorkspaces    = map show [1..5] ++ [ "e"] 
 
 -- Border colors for unfocused and focused windows, respectively.
 myNormalBorderColor  = "#50504c"
@@ -66,10 +71,7 @@ myFocusedBorderColor = "#00CD00"
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "Thunderbird" --> doShift "email"
-    , className =? "discord"     --> doShift "discord"
-    , className =? "Zoom"        --> doShift "zoom"
-    , className =? "Skype"       --> doShift "skype"
+    [ className =? "Thunderbird" --> doShift "e"
     , stringProperty "_NET_WM_STATE(ATOM)" =? "_NET_WM_STATE_ABOVE"  --> doFloat
     , stringProperty "_NET_WM_STATE(ATOM)" =? "_NET_WM_STATE_STAYS_ON_TOP"  --> doFloat
     ]
@@ -103,7 +105,7 @@ myLogHook = ewmhDesktopsLogHook <+>
 -- The Config
 
 -- defaults are defined in xmonad/XMonad/Config.hs
-myConfig :: XConfig MyLayout
+-- myConfig :: XConfig (ModifiedLayout AvoidStruts MyLayout)
 myConfig = def {
         terminal           = myTerminal,
         focusFollowsMouse  = myFocusFollowsMouse,
@@ -119,7 +121,7 @@ myConfig = def {
         mouseBindings      = myMouseBindings,
 
       -- hooks, layouts
-        layoutHook         = myLayout,
+        layoutHook         = avoidStruts myLayout,
         manageHook         = manageDocks <+> myManageHook <+> manageHook def,
         handleEventHook    = myEventHook,
         logHook            = myLogHook, 
@@ -130,5 +132,12 @@ myConfig = def {
 -- Main
 
 main :: IO ()
-main = withStatusBar myConfig >>= xmonad
-
+-- main = forkIO (startTaffybar taffybarConfig) >> xmonad myConfig
+main = xmonad $
+       -- docks allows xmonad to handle taffybar
+       docks $
+       -- ewmh allows taffybar access to the state of xmonad/x11
+       ewmh $
+       -- pagerHints supplies additional state that is not supplied by ewmh
+       pagerHints $
+       myConfig

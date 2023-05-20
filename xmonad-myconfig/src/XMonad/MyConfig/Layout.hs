@@ -1,12 +1,13 @@
 module XMonad.MyConfig.Layout where
 
 import XMonad
-import XMonad.Layout.LayoutModifier
 import XMonad.Layout.NoBorders
 import XMonad.Layout.TwoPane
 import XMonad.Layout.Grid
 import XMonad.Layout.Spacing
 import XMonad.Layout.Renamed
+import XMonad.Layout.LayoutModifier
+
 ------------------------------------------------------------------------
 -- Layouts:
 

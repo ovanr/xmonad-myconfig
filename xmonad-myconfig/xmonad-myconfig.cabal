@@ -10,6 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Taffybar.Config
       Xmobar.MyBar
       XMonad.MyConfig.Bindings
       XMonad.MyConfig.Config
@@ -26,6 +27,8 @@ library
     , X11
     , base
     , containers
+    , data-default
+    , taffybar
     , xmobar
     , xmonad
     , xmonad-contrib
@@ -44,6 +47,8 @@ executable myXmobar
     , X11
     , base
     , containers
+    , data-default
+    , taffybar
     , xmobar
     , xmonad
     , xmonad-contrib

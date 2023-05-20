@@ -5,7 +5,7 @@ module XMonad.MyConfig.Defaults where
 -- Default Applications 
 
 myTerminal      = "gnome-terminal"
-myWebBrowser    = "google-chrome-stable"
+myWebBrowser    = "chromium"
 myFileManager   = "nautilus"
 myEmailClient   = "thunderbird"
 myAppFinder     = "xfce4-appfinder"
